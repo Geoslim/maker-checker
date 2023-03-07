@@ -9,6 +9,7 @@ use App\Services\AuthService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -24,9 +25,12 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         try {
-            $response = $this->authService->register($request->validated());
+            DB::beginTransaction();
+                $response = $this->authService->register($request->validated());
+            DB::commit();
             return $this->successResponse($response);
         } catch (Exception $e) {
+            DB::rollBack();
             Log::error($e);
             return $this->error($e->getMessage());
         }

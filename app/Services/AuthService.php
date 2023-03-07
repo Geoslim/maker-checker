@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
+use App\Enum\Role;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthService
@@ -19,9 +18,9 @@ class AuthService
      */
     public function register(array $data): array
     {
-        // move this to user service
-        $user = User::create($data);
-
+        $user = UserService::createUser($data);
+        RoleService::assignRoles($user, [Role::defaultRole()]);
+        $user->load('roles');
         return $this->getResponse($user);
     }
 
@@ -33,6 +32,7 @@ class AuthService
     public function login(array $data): array
     {
         $user = User::query()->whereEmail($data['email'])
+            ->with('roles')
             ->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
