@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Services\RoleService;
-use App\Enums\Role as RoleEnum;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -50,17 +47,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (!$model->roles()) {
-                RoleService::assignRoles($model, [RoleEnum::defaultRole()]);
-            }
-        });
-    }
 
     /**
      * Set the user's password.

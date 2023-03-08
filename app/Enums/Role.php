@@ -10,6 +10,6 @@ enum Role: string
 
     public static function defaultRole(): string
     {
-        return Role::USER->value;
+        return Role::MAKER->value;
     }
 }
