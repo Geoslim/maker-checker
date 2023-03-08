@@ -34,6 +34,36 @@ class UserSeeder extends Seeder
         ];
 
         $user = UserService::createUser($user2);
-        RoleService::assignRoles($user, [Role::CHECKER, Role::MAKER]);
+        RoleService::assignRoles($user, [Role::CHECKER]);
+
+        $user3 = [
+            'first_name' => 'Daemon',
+            'last_name' => 'Targaryen',
+            'email' => 'daemon@gmail.com',
+            'password' => 'secret'
+        ];
+
+        $user = UserService::createUser($user3);
+        RoleService::assignRoles($user, [Role::MAKER]);
+
+        $user4 = [
+            'first_name' => 'Rhaegar',
+            'last_name' => 'Targaryen',
+            'email' => 'rhaegar@gmail.com',
+            'password' => 'secret'
+        ];
+
+        $user = UserService::createUser($user4);
+        RoleService::assignRoles($user, [Role::MAKER]);
+
+        $user5 = [
+            'first_name' => 'Jamie',
+            'last_name' => 'Lannister',
+            'email' => 'jamie@gmail.com',
+            'password' => 'secret'
+        ];
+
+        $user = UserService::createUser($user5);
+        RoleService::assignRoles($user, [Role::USER]);
     }
 }

@@ -9,9 +9,9 @@ use App\Models\Request as RequestModel;
 use App\Services\RequestService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 class RequestController extends Controller
 {
@@ -19,11 +19,14 @@ class RequestController extends Controller
     {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(): JsonResponse
     {
-        return RequestResource::collection(
-            RequestModel::whereStatus(Status::PENDING)
-                ->orderBy('id', 'desc')->get()
+        return $this->successResponse(
+            RequestResource::collection(
+                RequestModel::whereStatus(Status::PENDING)
+                    ->orderBy('id', 'desc')
+                    ->get()
+            )
         );
     }
 
@@ -38,10 +41,14 @@ class RequestController extends Controller
             $this->requestService->approve($request, auth()->user()->id);
             DB::commit();
             return $this->success('Request successfully approved.');
-        } catch (Exception $e) {
+        } catch (InvalidArgumentException $e) {
             DB::rollback();
             Log::error($e);
             return $this->error($e->getMessage());
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::error($e);
+            return $this->error(__('exception.request.processing'));
         }
     }
 
@@ -56,7 +63,7 @@ class RequestController extends Controller
             return $this->success('Request successfully declined.');
         } catch (Exception $e) {
             Log::error($e);
-            return $this->error($e->getMessage());
+            return $this->error(__('exception.request.processing'));
         }
     }
 }

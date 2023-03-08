@@ -25,9 +25,28 @@ To start project, perform the following step in the order
 
 #### email => viserys@gmail.com
 #### password => secret
-##### role => maker
+#### roles => [maker, checker]
 ________________________________________________________________
 
 #### email => aegon@gmail.com
-#### email => secret
-##### role => checker
+#### password => secret
+#### roles => [checker]
+
+________________________________________________________________
+
+#### email => daemon@gmail.com
+#### password => secret
+#### roles => [maker]
+
+________________________________________________________________
+
+#### email => rhaegar@gmail.com
+#### password => secret
+#### roles => [maker]
+
+________________________________________________________________
+________________________________________________________________
+
+#### email => jamie@gmail.com
+#### password => secret
+#### roles => [user]

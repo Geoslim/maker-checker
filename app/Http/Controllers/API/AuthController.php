@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exceptions\HttpException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -32,7 +33,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             Log::error($e);
-            return $this->error($e->getMessage());
+            return $this->error('An error occurred while attempting to sign up. Please try again later.');
         }
 
     }
@@ -46,9 +47,12 @@ class AuthController extends Controller
         try {
             $response = $this->authService->login($request->validated());
             return $this->successResponse($response);
+        } catch (HttpException $e) {
+            Log::error($e);
+            return $this->error($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
             Log::error($e);
-            return $this->error($e->getMessage());
+            return $this->error('An error occurred while attempting to log in. Please try again later.');
         }
     }
 
@@ -59,11 +63,11 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         try {
-            $this->authService->logout($request);
+            $this->authService->logout($request->user());
             return $this->success('Successfully logged out.');
         } catch (Exception $e) {
             Log::error($e);
-            return $this->error('An error occurred');
+            return $this->error('An error occurred while attempting to log out. Please try again later.');
         }
     }
 }

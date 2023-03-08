@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Enums\Role;
+use App\Exceptions\HttpException;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +38,7 @@ class AuthService
             ->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            throw new Exception('Invalid credentials', Response::HTTP_BAD_REQUEST);
+            throw new HttpException('Invalid credentials', Response::HTTP_BAD_REQUEST);
         }
 
         return $this->getResponse($user);
@@ -55,14 +57,14 @@ class AuthService
     }
 
     /**
-     * @param Request $request
+     * @param Authenticatable|User $user
      * @return bool
      */
-    public function logout(Request $request): bool
+    public function logout(Authenticatable|User $user): bool
     {
         abort_unless(
-            $request->user()->tokecns()->delete(),
-            Response::HTTP_BAD_REQUEST
+            $user->tokens->map->revoke(),
+            Response::HTTP_INTERNAL_SERVER_ERROR
         );
 
         return true;

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\RequestType;
+use App\Exceptions\HttpException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Request\CreateUserRequest;
 use App\Http\Requests\Request\UpdateUserRequest;
@@ -34,11 +36,16 @@ class UserController extends Controller
     public function create(CreateUserRequest $request): JsonResponse
     {
         try {
-            $response = $this->requestService->create($request->validated(), $request->user()->id);
+            $response = $this->requestService->createRequest(
+                $request->user()->id,
+                RequestType::CREATE->value,
+                null,
+                $request->validated(),
+            );
             return $this->successResponse(RequestResource::make($response));
         } catch (Exception $e) {
             Log::error($e);
-            return $this->error($e->getMessage());
+            return $this->error(__('exception.request.creating'));
         }
     }
 
@@ -50,12 +57,19 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
         try {
-            $data = $request->validated();
-            $response = $this->requestService->update($data, $user->id, $request->user()->id);
+            $response = $this->requestService->createRequest(
+                $request->user()->id,
+                RequestType::UPDATE->value,
+                $user->id,
+                $request->validated(),
+            );
             return $this->successResponse(RequestResource::make($response));
-        } catch (Exception $e) {
+        } catch (HttpException $e) {
             Log::error($e);
             return $this->error($e->getMessage());
+        } catch (Exception $e) {
+            Log::error($e);
+            return $this->error(__('exception.request.creating'));
         }
     }
 
@@ -67,11 +81,18 @@ class UserController extends Controller
     public function delete(Request $request, User $user): JsonResponse
     {
         try {
-            $response = $this->requestService->delete($user->id, $request->user()->id);
+            $response = $this->requestService->createRequest(
+                $request->user()->id,
+                RequestType::DELETE->value,
+                $user->id,
+            );
             return $this->successResponse(RequestResource::make($response));
-        } catch (Exception $e) {
+        } catch (HttpException $e) {
             Log::error($e);
             return $this->error($e->getMessage());
+        } catch (Exception $e) {
+            Log::error($e);
+            return $this->error(__('exception.request.creating'));
         }
     }
 }

@@ -4,67 +4,30 @@ namespace App\Services;
 
 use App\Enums\RequestType;
 use App\Enums\Status;
+use App\Exceptions\HttpException;
 use App\Jobs\NotifyAdministrators;
 use App\Models\Request as RequestModel;
 use Exception;
+use InvalidArgumentException;
 
 class RequestService
 {
     /**
-     * @param array $data
      * @param int $authUserId
-     * @return mixed
-     */
-    public function create(array $data, int $authUserId): mixed
-    {
-        $request = RequestModel::create([
-            'type' => RequestType::CREATE->value,
-            'data' => $data,
-            'maker_id' => $authUserId
-        ]);
-
-        $this->notifyAdministrators($request->load(['user', 'maker']), $authUserId);
-
-        return $request;
-    }
-
-    /**
-     * @param array $data
-     * @param int $userId
-     * @param int $authUserId
+     * @param string $requestType
+     * @param int|null $userId
+     * @param array|null $data
      * @return mixed
      * @throws Exception
      */
-    public function update(array $data, int $userId, int $authUserId): mixed
+    public function createRequest(int $authUserId, string $requestType, ?int $userId = null, ?array $data = null): mixed
     {
         $this->abortIfRequestExists($userId);
 
         $request = RequestModel::create([
-            'user_id' => $userId,
-            'type' => RequestType::UPDATE->value,
-            'data' => $data,
-            'maker_id' => $authUserId
-        ]);
-
-        $this->notifyAdministrators($request->load(['user', 'maker']), $authUserId);
-
-        return $request;
-    }
-
-    /**
-     * @param int $userId
-     * @param int $authUserId
-     * @return mixed
-     * @throws Exception
-     */
-    public function delete(int $userId, int $authUserId): mixed
-    {
-        $this->abortIfRequestExists($userId);
-
-        $request = RequestModel::create([
-            'user_id' => $userId,
-            'type' => RequestType::DELETE->value,
-            'data' => null,
+            'user_id' => $userId ?? null,
+            'type' => $requestType,
+            'data' => $data ?? null,
             'maker_id' => $authUserId
         ]);
 
@@ -84,7 +47,7 @@ class RequestService
             RequestType::CREATE->value => UserService::createUser($request->data),
             RequestType::UPDATE->value => UserService::updateUser($request->user, $request->data),
             RequestType::DELETE->value => UserService::deleteUser($request->user),
-            default => throw new \InvalidArgumentException('Invalid request type specified.')
+            default => throw new InvalidArgumentException('Invalid request type specified.')
         };
 
         $request->update([
@@ -105,20 +68,20 @@ class RequestService
         return $request->delete();
     }
 
-
     /**
-     * @param int $userId
+     * @param int|null $userId
      * @return void
      * @throws Exception
      */
-    protected function abortIfRequestExists(int $userId): void
+    protected function abortIfRequestExists(?int $userId = null): void
     {
         if (
+            !is_null($userId) &&
             RequestModel::whereUserId($userId)
                 ->whereStatus(Status::PENDING)
                 ->exists()
         ) {
-            throw new Exception('Sorry, there is a pending request for this user.');
+            throw new HttpException('Sorry, there is a pending request for this user.');
         }
     }
 
