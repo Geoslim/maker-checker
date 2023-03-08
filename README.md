@@ -11,7 +11,7 @@
 To start project, perform the following step in the order
 
 - Clone the repository by running the command
-- 'git clone https://github.com/Geoslim/maker-checker'
+- git clone 'https://github.com/Geoslim/maker-checker.git'
 - cd maker-checker
 - Run composer install
 - Run 'cp .env.example .env'

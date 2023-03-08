@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Enum\RequestType;
-use App\Enum\Status;
+use App\Enums\RequestType;
+use App\Enums\Status;
+use App\Jobs\NotifyAdministrators;
 use App\Models\Request as RequestModel;
 use Exception;
 
@@ -16,11 +17,15 @@ class RequestService
      */
     public function create(array $data, int $authUserId): mixed
     {
-        return RequestModel::create([
+        $request = RequestModel::create([
             'type' => RequestType::CREATE->value,
             'data' => $data,
             'maker_id' => $authUserId
         ]);
+
+        $this->notifyAdministrators($request->load(['user', 'maker']), $authUserId);
+
+        return $request;
     }
 
     /**
@@ -34,12 +39,16 @@ class RequestService
     {
         $this->abortIfRequestExists($userId);
 
-        return RequestModel::create([
+        $request = RequestModel::create([
             'user_id' => $userId,
             'type' => RequestType::UPDATE->value,
             'data' => $data,
             'maker_id' => $authUserId
         ]);
+
+        $this->notifyAdministrators($request->load(['user', 'maker']), $authUserId);
+
+        return $request;
     }
 
     /**
@@ -52,28 +61,16 @@ class RequestService
     {
         $this->abortIfRequestExists($userId);
 
-        return RequestModel::create([
+        $request = RequestModel::create([
             'user_id' => $userId,
             'type' => RequestType::DELETE->value,
             'data' => null,
             'maker_id' => $authUserId
         ]);
-    }
 
-    /**
-     * @param int $userId
-     * @return void
-     * @throws Exception
-     */
-    protected function abortIfRequestExists(int $userId): void
-    {
-        if (
-            RequestModel::whereUserId($userId)
-                ->whereStatus(Status::PENDING)
-                ->exists()
-        ) {
-            throw new Exception('Sorry, there is a pending request for this user.');
-        }
+        $this->notifyAdministrators($request->load(['user', 'maker']), $authUserId);
+
+        return $request;
     }
 
     /**
@@ -106,5 +103,32 @@ class RequestService
     public function decline(RequestModel $request): ?bool
     {
         return $request->delete();
+    }
+
+
+    /**
+     * @param int $userId
+     * @return void
+     * @throws Exception
+     */
+    protected function abortIfRequestExists(int $userId): void
+    {
+        if (
+            RequestModel::whereUserId($userId)
+                ->whereStatus(Status::PENDING)
+                ->exists()
+        ) {
+            throw new Exception('Sorry, there is a pending request for this user.');
+        }
+    }
+
+    /**
+     * @param RequestModel $request
+     * @param int $authUserId
+     * @return void
+     */
+    protected function notifyAdministrators(RequestModel $request, int $authUserId): void
+    {
+        NotifyAdministrators::dispatch($request, $authUserId);
     }
 }

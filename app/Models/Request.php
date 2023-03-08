@@ -36,6 +36,16 @@ class Request extends Model
         'data' => 'json'
     ];
 
+    public function checker(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'checker_id', 'id');
+    }
+
+    public function maker(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'maker_id', 'id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

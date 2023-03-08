@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enum\Status;
+use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RequestResource;
 use App\Models\Request as RequestModel;
@@ -27,6 +27,10 @@ class RequestController extends Controller
         );
     }
 
+    /**
+     * @param RequestModel $request
+     * @return JsonResponse
+     */
     public function approve(RequestModel $request): JsonResponse
     {
         try {
@@ -41,6 +45,10 @@ class RequestController extends Controller
         }
     }
 
+    /**
+     * @param RequestModel $request
+     * @return JsonResponse
+     */
     public function decline(RequestModel $request): JsonResponse
     {
         try {

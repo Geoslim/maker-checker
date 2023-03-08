@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Services\RoleService;
-use App\Enum\Role as RoleEnum;
+use App\Enums\Role as RoleEnum;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

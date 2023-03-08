@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Enum\Role;
+use App\Enums\Role;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
