@@ -15,13 +15,22 @@ class UserService
         return User::create($data);
     }
 
+    /**
+     * @param User $user
+     * @param array $data
+     * @return User
+     */
     public static function updateUser(User $user, array $data): User
     {
         $user->update($data);
         return $user->refresh();
     }
 
-    public static function deleteUser(User $user)
+    /**
+     * @param User $user
+     * @return bool|null
+     */
+    public static function deleteUser(User $user): ?bool
     {
         return $user->delete();
     }
