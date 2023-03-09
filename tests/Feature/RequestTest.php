@@ -18,7 +18,6 @@ class RequestTest extends UserTestCase
     public function testAdminCanMakeACreateRequest()
     {
         Bus::fake();
-        Notification::fake();
 
         $data = [
             'first_name' => 'George',
@@ -26,7 +25,7 @@ class RequestTest extends UserTestCase
             'email' => 'george@gmail.com',
         ];
 
-        $response = $this->actingAs($this->makerUser, 'api')
+        $this->actingAs($this->makerUser, 'api')
             ->postJson('api/users/create', $data)
             ->assertSuccessful();
 
