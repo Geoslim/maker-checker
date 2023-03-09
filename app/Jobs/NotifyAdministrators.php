@@ -23,7 +23,7 @@ class NotifyAdministrators implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(private RequestModel $request, private int $authUserId)
+    public function __construct(public RequestModel $request, public int $authUserId)
     {
     }
 
@@ -35,8 +35,9 @@ class NotifyAdministrators implements ShouldQueue
     public function handle(): void
     {
         $admin = User::whereHas('roles', function ($query) {
-            $query->whereIn('name', [Role::MAKER, Role::CHECKER]);
-        })->whereNotIn('id', $this->authUserId)
+            $query->whereIn('name', [Role::MAKER->value, Role::CHECKER->value]);
+        })
+            ->where('id', '!=', $this->authUserId)
             ->get();
 
         Notification::send($admin, new RequestNotification($this->request));

@@ -1,7 +1,7 @@
 @component('mail::message')
 Hello <span class="bold">{{ $user['first_name'] }},</span>
 
-<p>Please see below details of the recent request made:</p>
+<p>Please see details of a recent request made below:</p>
 
 <p>Request details:</p>
 

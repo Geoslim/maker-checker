@@ -8,7 +8,9 @@ use App\Jobs\NotifyAdministrators;
 use App\Models\Request;
 use App\Models\Request as RequestModel;
 use App\Models\User;
+use App\Notifications\RequestNotification;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Notification;
 use Tests\UserTestCase;
 
 class RequestTest extends UserTestCase
@@ -16,6 +18,7 @@ class RequestTest extends UserTestCase
     public function testAdminCanMakeACreateRequest()
     {
         Bus::fake();
+        Notification::fake();
 
         $data = [
             'first_name' => 'George',
@@ -23,7 +26,7 @@ class RequestTest extends UserTestCase
             'email' => 'george@gmail.com',
         ];
 
-        $this->actingAs($this->makerUser, 'api')
+        $response = $this->actingAs($this->makerUser, 'api')
             ->postJson('api/users/create', $data)
             ->assertSuccessful();
 
@@ -218,6 +221,9 @@ class RequestTest extends UserTestCase
         ]);
     }
 
+    /**
+     * Only an administrator with CHECKER role can approve or decline a request.
+     */
     public function testAdminWithoutCheckerRoleCannotApproveRequest()
     {
         $user = User::factory()->create();
@@ -252,5 +258,22 @@ class RequestTest extends UserTestCase
             'last_name' => $user['last_name'],
             'email' => $user['email']
         ]);
+    }
+
+    /**
+     * Testing Notification separately because it's inside a job.
+     */
+    public function testNotificationIsSent()
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $request = $this->createRequest($this->makerUser->id, RequestType::DELETE->value, $user->id);
+
+        $job = new NotifyAdministrators($request, $this->makerUser->id);
+        $job->handle();
+
+        Notification::assertSentTo($this->checkerUser, RequestNotification::class);
     }
 }

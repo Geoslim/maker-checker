@@ -31,7 +31,7 @@ class RequestService
             'maker_id' => $authUserId
         ]);
 
-        $this->notifyAdministrators($request->load(['user', 'maker']), $authUserId);
+        $this->notifyAdministrators($request->refresh()->load(['user', 'maker']), $authUserId);
 
         return $request;
     }
