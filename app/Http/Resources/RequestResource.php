@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
 
-class UserResource extends JsonResource
+class RequestResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,11 +19,12 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->{'id'},
-            'first_name' => $this->{'first_name'},
-            'last_name' => $this->{'last_name'},
-            'email' => $this->{'email'},
-            'roles' => RoleResource::collection($this->whenLoaded('roles')),
-            'created_at' => $this->{'created_at'},
+            'user_id' => $this->{'user_id'},
+            'type' => $this->{'type'},
+            'status' => $this->{'status'},
+            'data' => $this->{'data'},
+            'approved_at' => $this->{'approved_at'},
+            'created_at' => $this->{'created_at'}
         ];
     }
 }
