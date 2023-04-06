@@ -35,7 +35,6 @@ class AuthController extends Controller
             Log::error($e);
             return $this->error('An error occurred while attempting to sign up. Please try again later.');
         }
-
     }
 
     /**
@@ -71,3 +70,4 @@ class AuthController extends Controller
         }
     }
 }
+
