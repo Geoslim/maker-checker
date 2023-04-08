@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Traits\JsonResponse;
+use App\Traits\JsonResponse as JResponse;
 use App\Models\User;
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class VerifyAdminRole
 {
-    use JsonResponse;
+    use JResponse;
 
     /**
      * Handle an incoming request.
@@ -20,9 +21,9 @@ class VerifyAdminRole
      * @param Request $request
      * @param Closure $next
      * @param string $role
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function handle(Request $request, Closure $next, string $role): \Illuminate\Http\JsonResponse
+    public function handle(Request $request, Closure $next, string $role): JsonResponse
     {
         $roles = explode('|', $role);
 
