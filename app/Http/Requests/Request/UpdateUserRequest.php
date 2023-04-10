@@ -27,7 +27,11 @@ class UpdateUserRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', Rule::unique('users')->ignore($this->user)]
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($this->user)
+            ]
         ];
     }
 }
