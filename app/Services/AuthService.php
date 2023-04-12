@@ -38,7 +38,10 @@ class AuthService
             ->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            throw new HttpException('Invalid credentials', Response::HTTP_BAD_REQUEST);
+            throw new HttpException(
+                'Invalid credentials',
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         return $this->getResponse($user);
