@@ -23,6 +23,7 @@ class AuthService
         $user = UserService::createUser($data);
         RoleService::assignRoles($user, [Role::defaultRole()]);
         $user->load('roles');
+
         return $this->getResponse($user);
     }
 
