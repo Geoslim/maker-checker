@@ -16,6 +16,7 @@ class RoleService
     public static function assignRoles(User|Model $user, array $roles): void
     {
         $roleId = Role::whereIn('name', $roles)->pluck('id');
+
         $user->roles()->sync($roleId);
     }
 }

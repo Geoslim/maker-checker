@@ -33,7 +33,9 @@ class AuthController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             Log::error($e);
-            return $this->error('An error occurred while attempting to sign up. Please try again later.');
+            return $this->error(
+                'An error occurred while attempting to sign up. Please try again later.'
+            );
         }
     }
 
@@ -51,7 +53,9 @@ class AuthController extends Controller
             return $this->error($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
             Log::error($e);
-            return $this->error('An error occurred while attempting to log in. Please try again later.');
+            return $this->error(
+                'An error occurred while attempting to log in. Please try again later.'
+            );
         }
     }
 
@@ -66,7 +70,9 @@ class AuthController extends Controller
             return $this->success('Successfully logged out.');
         } catch (Exception $e) {
             Log::error($e);
-            return $this->error('An error occurred while attempting to log out. Please try again later.');
+            return $this->error(
+                'An error occurred while attempting to log out. Please try again later.'
+            );
         }
     }
 }
