@@ -25,7 +25,9 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         return $this->successResponse(
-            UserResource::collection(User::orderBy('id', 'desc')->get()),
+            UserResource::collection(
+                User::orderBy('id', 'desc')->get()
+            ),
         );
     }
 
