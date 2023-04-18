@@ -20,8 +20,10 @@ trait JsonResponse
         return response()->json($response, $statusCode);
     }
 
-    public function success($message = "Operation Successful", $statusCode = Response::HTTP_OK): \Illuminate\Http\JsonResponse
-    {
+    public function success(
+        $message = "Operation Successful",
+        $statusCode = Response::HTTP_OK
+    ): \Illuminate\Http\JsonResponse {
         $response = [
             "success" => true,
             "message" => $message
