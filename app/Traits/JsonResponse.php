@@ -43,8 +43,9 @@ trait JsonResponse
         return response()->json($response, $statusCode);
     }
 
-    public function error($message = 'Operation Failed', $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR): \Illuminate\Http\JsonResponse
-    {
+    public function error(
+        $message = 'Operation Failed', $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+    ): \Illuminate\Http\JsonResponse {
         $response = [
             "success" => false,
             "message" => $message,
